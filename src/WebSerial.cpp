@@ -1,5 +1,7 @@
 #include "WebSerial.h"
 
+const char* http_username = "admin";
+const char* http_password = "admin";
 
 void WebSerialClass::begin(AsyncWebServer *server, const char* url){
     _server = server;
@@ -7,6 +9,9 @@ void WebSerialClass::begin(AsyncWebServer *server, const char* url){
 
     _server->on(url, HTTP_GET, [](AsyncWebServerRequest *request){
         // Send Webpage
+        if (!request->authenticate(http_username, http_password)) {
+            return request->requestAuthentication();
+        }
         AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", WEBSERIAL_HTML, WEBSERIAL_HTML_SIZE);
         response->addHeader("Content-Encoding","gzip");
         request->send(response);        
